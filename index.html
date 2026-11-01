@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sayed elalmanee - Elalmanee Auto Solver</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>sayed elalmanee</h1>
+        <p>Elalmanee Auto Solver</p>
+    </header>
+
+    <div class="main-container">
+        
+        <!-- 1. نموذج تسجيل الدخول -->
+        <div class="card" id="loginCard">
+            <h2>تسجيل الدخول</h2>
+            <form id="loginForm" onsubmit="event.preventDefault(); handleLogin();">
+                <div class="input-group">
+                    <label>Student ID</label>
+                    <input type="text" id="studentId" required placeholder="أدخل معرف الطالب">
+                </div>
+                <div class="input-group">
+                    <label>Student Password</label>
+                    <input type="password" id="studentPassword" required placeholder="أدخل كلمة المرور">
+                </div>
+                <button type="submit" class="btn-submit">خش يا برنس</button>
+            </form>
+        </div>
+
+        <!-- 2. واجهة اختيار البوابات -->
+        <div class="card portal-selection" id="portalSection" style="display: none;">
+            <h2>اختر البوابة المطلوبة</h2>
+            <div class="portals-grid">
+                <div class="portal-card" onclick="selectPortal('JavaScript')">
+                    <h3>JavaScript Portal</h3>
+                    <p>بوابة مهام لغة جافا سكربت</p>
+                </div>
+                <div class="portal-card" onclick="selectPortal('Python')">
+                    <h3>Python Portal</h3>
+                    <p>بوابة تحديات لغة بايثون</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. لوحة إدخال الإجابات وإنشاء Bookmarklet -->
+        <div class="card solver-panel" id="solverPanel" style="display: none;">
+            <button class="back-btn" onclick="goBackToPortals()">← رجوع للخلف</button>
+            <h2 id="solverTitle" style="text-align: center;">إعداد أداة الحل الآلي</h2>
+            <p style="color: #94a3b8; margin-bottom: 0.8rem; font-size: 0.9rem;">
+                اكتب الإجابات أو الكود الصحيح الذي تريد للأداة تنفيذه:
+            </p>
+            <textarea id="answersInput" rows="5" placeholder="اكتب الكود أو الإجابات هنا..."></textarea>
+            <button type="button" onclick="generateBookmarklet()" class="btn-submit">توليد أداة الـ Bookmarklet</button>
+
+            <div class="bookmarklet-box" id="resultBox" style="display: none;">
+                <p style="font-size: 0.9rem; color: #cbd5e1;">اسحب هذا الزر إلى شريط المفضلة (Bookmarks Bar) في متصفحك، ثم افتح المنصة واضغط عليه:</p>
+                <a href="#" id="bookmarkletOutput" class="bookmarklet-link">⚡ Elalmanee Solver</a>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة &copy; 2026 <span>Elalmanee Auto Solver</span></p>
+    </footer>
+
+    <!-- كافة الدوال البرمجية المباشرة -->
+    <script>
+        let currentPortal = '';
+
+        // 1. التوجيه عند الضغط على تسجيل الدخول
+        function handleLogin() {
+            var studentId = document.getElementById('studentId').value;
+            var studentPassword = document.getElementById('studentPassword').value;
+
+            if (studentId && studentPassword) {
+                document.getElementById('loginCard').style.display = 'none';
+                document.getElementById('portalSection').style.display = 'block';
+            } else {
+                alert('الرجاء كتابة البيانات أولاً يا برنس!');
+            }
+        }
+
+        // 2. التوجيه عند الضغط على أحد البوابات (JavaScript أو Python)
+        function selectPortal(portalName) {
+            currentPortal = portalName;
+            document.getElementById('portalSection').style.display = 'none';
+            document.getElementById('solverPanel').style.display = 'block';
+            document.getElementById('solverTitle').innerText = `إعداد أداة حل (${portalName})`;
+        }
+
+        // 3. العودة من لوحة الحل إلى البوابات
+        function goBackToPortals() {
+            document.getElementById('solverPanel').style.display = 'none';
+            document.getElementById('portalSection').style.display = 'block';
+            document.getElementById('resultBox').style.display = 'none';
+        }
+
+        // 4. توليد أداة الـ Bookmarklet
+        function generateBookmarklet() {
+            const answersText = document.getElementById('answersInput').value;
+            if (!answersText.trim()) {
+                alert('الرجاء كتابة الإجابات أو الكود أولاً يا برنس!');
+                return;
+            }
+
+            const solverScript = `javascript:(function() {
+                alert('أهلاً بك في أداتك Elalmanee Auto Solver (${currentPortal}) - جاري حل المنصة...');
+                const customAnswers = ${JSON.stringify(answersText)};
+                console.log("تم تحميل الإجابات المخصصة:", customAnswers);
+
+                const inputs = document.querySelectorAll('input, textarea');
+                if(inputs.length > 0) {
+                    inputs[0].value = customAnswers;
+                    inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                alert('تم تطبيق الحل الآلي بنجاح!');
+            })();`;
+
+            const outputLink = document.getElementById('bookmarkletOutput');
+            outputLink.href = solverScript;
+            outputLink.innerText = `⚡ شغل حل ${currentPortal}`;
+            
+            document.getElementById('resultBox').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
